@@ -1,0 +1,11 @@
+personal/
+cache/
+data/
+dist/
+build/
+synthetic_graphs/
+wandb/
+glove/
+lib/
+*.egg-info/
+*.DS_Store

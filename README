@@ -1,0 +1,2 @@
+1. run '''$lib/geometric-graph-embedding: python setup.py build'''
+2. run '''$lib/geometric-graph-embedding: make all'''
