@@ -1,4 +1,3 @@
-from src.learning.training.trainer import get_metrics
 from sklearn.metrics import ndcg_score
 import torch
 from src.learning.generate.graph import BipartiteGraph
@@ -44,8 +43,9 @@ def evaluate(model, eval_graph):
 
 def get_metrics(edge_prob, ground_truth):
 
+
     threshold = calculate_optimal_threshold(ground_truth, edge_prob)
-    pred = edge_prob > threshold
+    pred = edge_prob >= threshold
     accuracy = sklearn.metrics.accuracy_score(ground_truth, pred)
     precision = sklearn.metrics.precision_score(ground_truth, pred)
     recall = sklearn.metrics.recall_score(ground_truth, pred)
@@ -99,7 +99,7 @@ def get_prediction_coo(eval_g, edges_u, edges_v, edge_prob, ground_truth):
         sparse coo: the reconstructed interaction matrix
     """
     optimal_threshold = calculate_optimal_threshold(ground_truth, edge_prob)
-    hard_pred = edge_prob > optimal_threshold
+    hard_pred = edge_prob >= optimal_threshold
     logger.info("total #edges:", len(hard_pred))
     logger.info("predicted #pos edges:", sum(hard_pred))
     logger.info("hard_pred", hard_pred[0])

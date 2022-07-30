@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 from src.learning.generate.generate_synthetic_graph import generateSyntheticBipartiteGraph, GraphParams
-from src.learning.models.loss import CONE, HYPERPLANE, VECTOR, calc_loss
+from src.learning.models.loss.vector import VECTOR
+from src.learning.models.loss.loss import calc_loss
 
 BIPARTITE_DEFAULT_TRAINING_CONFIG = {
 

@@ -1,4 +1,3 @@
-
 from src.learning.training.evaluate import get_metrics
 from torch.optim.lr_scheduler import ExponentialLR, StepLR
 import torch
@@ -7,6 +6,7 @@ import matplotlib.pyplot as plt
 import sklearn
 from loguru import logger
 from collections import defaultdict
+
 
 def get_optimizer(config, model):
     return torch.optim.Adam(
@@ -28,6 +28,7 @@ def get_lr_scheduler(config, optim):
     else:
         raise ValueError("lr scheduler not recognized")
     return lr_scheduler
+
 
 class Logger:
     def __init__(self, print_every=1):
@@ -56,18 +57,20 @@ class Logger:
         metrics = {}
         for key in self.logs:
             if self.logs[key]:
-                metrics[key] = sum(self.logs[key])/len(self.logs[key])
-                self.metric_history[key].append(metrics[key] )
+                metrics[key] = sum(self.logs[key]) / len(self.logs[key])
+                self.metric_history[key].append(metrics[key])
                 self.logs[key] = None
         self.epoch_history.append(metrics)
         if len(self.epoch_history) % self.print_every == 0:
             logger.info(f"epoch = {len(self.epoch_history)}")
             for key in metrics:
                 logger.info(f"{key} = {metrics[key]}")
+
     def get_history(self, metric):
         if metric not in self.metric_history:
             return None
         return self.metric_history[metric]
+
 
 def inference(model, dataloader):
     model.eval()
@@ -81,24 +84,25 @@ def inference(model, dataloader):
         batch_sizes.append(len(batch))
         edge_probs.append(edge_prob)
         ground_truths.append(ground_truth)
-    loss = sum(losses)/sum(batch_sizes)
+    loss = sum(losses) / sum(batch_sizes)
 
-    edge_prob = torch.concat(edge_probs)
+    edge_prob = torch.concat(edge_probs).detach().cpu()
     ground_truth = torch.concat(ground_truths)
     return {
-
         **get_metrics(edge_prob, ground_truth),
-        "loss":loss,
+        "loss": loss,
     }
+
 
 def debug(model, train_g):
     print("debug...")
-    u_embs, _= model.get_embs(list(train_g.u2id.keys()))
+    u_embs, _ = model.get_embs(list(train_g.u2id.keys()))
     v_embs, _ = model.get_embs(list(train_g.v2id.keys()))
     pos_u, pos_v = train_g.u2id[train_g.edges_u[0]], train_g.v2id[train_g.edges_v[0]]
     pos_emb, neg_emb = u_embs[pos_u], v_embs[pos_v]
     dot_product = pos_emb.T.dot(neg_emb)
     print(dot_product)
+
 
 def trainer(model, train_loader, val_loader, config):
 
@@ -143,13 +147,15 @@ def trainer(model, train_loader, val_loader, config):
             batch_loss.backward()
             edge_probs.append(edge_prob)
             ground_truths.append(ground_truth)
-            logger.log({"loss": batch_loss.detach().cpu().numpy()}, prefix = "train")
+            logger.log({"loss": batch_loss.detach().cpu().numpy()}, prefix="train")
             if batch_loss.detach().cpu().isnan():
                 break
             optim.step()
         lr_scheduler.step()
 
-        training_metrics = get_metrics(torch.concat(edge_probs), torch.concat(ground_truths))
+        training_metrics = get_metrics(
+            torch.concat(edge_probs).detach().cpu(), torch.concat(ground_truths)
+        )
         logger.log(training_metrics, prefix="train")
         debug(model, config.train_g)
         # ---------------------- validate -------------------- #
