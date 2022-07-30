@@ -1,0 +1,65 @@
+import string
+import torch
+import datetime
+import wandb
+import matplotlib.pyplot as plt
+import random
+from loguru import logger
+from src.learning.training.dataset import get_neg_sampler, GraphDataset
+from src.learning.training.trainer import trainer
+from src.learning.training.evaluate import evaluate
+from collections import defaultdict
+import numpy as np
+from torch.utils.data import DataLoader
+from src.learning.models.model import BipartiteModel
+import os
+
+
+class TrainingConfig:
+    def __init__(self, default_config):
+        for key, value in default_config.items():
+            setattr(self, key, value)
+
+    def get_dict(self):
+        return {attr: value for attr, value in self.__dict__.items()}
+    def get_wandb_config(self):
+        config = self.get_dict()
+        config["train_g"] = config["train_g"].params
+        if config["val_g"]:
+            config["val_g"] = config["val_g"].params
+        if config["test_g"]:
+            config["test_g"] = config["test_g"].params
+        config["geometry"] = config["geometry"].toString()
+
+def setup_training(config):
+
+    train_g = config.train_g
+    val_g = config.val_g
+    train_dataset = GraphDataset(train_g, config.k, get_neg_sampler(config.neg_sampler))
+    train_loader = DataLoader(train_dataset, shuffle=True, batch_size=config.batch_size)
+    val_dataset, val_loader = None, None
+    if val_g:
+        val_dataset = GraphDataset(val_g, config.k, get_neg_sampler(config.neg_sampler))
+        val_loader = DataLoader(val_dataset, shuffle=True, batch_size=config.batch_size)
+    model = BipartiteModel(config)
+
+    return train_loader, val_loader, model
+
+
+def train(config):
+
+    torch.manual_seed(config.seed)
+    random.seed(config.seed)
+    config.exp_id = str(datetime.datetime.now()).replace(":", "_")
+
+    if not config.save_dir:
+        config.save_dir = os.path.join("models", config.exp_id)
+
+    train_loader, val_loader, model = setup_training(config)
+    trainer(model, train_loader, val_loader, config)
+    if not config.eval_g:
+        config.eval_g = config.train_g
+    metrics, predictions_coo = evaluate(model, config.eval_g)
+
+    logger.info("Training complete!")
+    return model, metrics, predictions_coo

@@ -8,3 +8,8 @@ wandb/
 glove/
 *.egg-info/
 *.DS_Store
+*-checkpoint.ipynb
+__pycache__
+*.py[cod]
+*$py.class
+*.pyc
