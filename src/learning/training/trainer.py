@@ -1,4 +1,5 @@
 
+from src.learning.training.evaluate import get_metrics
 from torch.optim.lr_scheduler import ExponentialLR, StepLR
 import torch
 import wandb
@@ -68,21 +69,6 @@ class Logger:
             return None
         return self.metric_history[metric]
 
-def get_metrics(edge_prob, ground_truth):
-    pred = edge_prob > 0.5
-    accuracy = sklearn.metrics.accuracy_score(ground_truth, pred)
-    precision = sklearn.metrics.precision_score(ground_truth, pred)
-    recall = sklearn.metrics.recall_score(ground_truth, pred)
-    F1 = sklearn.metrics.f1_score(ground_truth, pred)
-
-    return {
-        "accuracy": accuracy,
-        "precision": precision,
-        "recall": recall,
-        "F1": F1,
-        # "AUC": 0,
-    }
-
 def inference(model, dataloader):
     model.eval()
     losses = []
@@ -99,8 +85,6 @@ def inference(model, dataloader):
 
     edge_prob = torch.concat(edge_probs)
     ground_truth = torch.concat(ground_truths)
-    print("edge_prob", edge_prob)
-    print("ground_truth", ground_truth)
     return {
 
         **get_metrics(edge_prob, ground_truth),

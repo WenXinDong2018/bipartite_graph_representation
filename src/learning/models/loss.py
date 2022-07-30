@@ -212,7 +212,7 @@ class VECTOR(Geometry):
         self.is_vector = True
         self.loss_type = Loss.BCE
         self.agg_func = AggragationFunctions.MEAN
-
+        self.negative_weight = 0.5
     def get_dim(self, n_parameters):
         return n_parameters
 
@@ -245,18 +245,10 @@ class VECTOR(Geometry):
         logit_prob_neg = log_prob_neg + neg_loss
         weights = F.softmax(logit_prob_neg, dim=-1)
         weighted_average_neg_loss = (weights * neg_loss).sum(dim=-1)
-        return (
+        loss =  (
             1 - self.negative_weight
         ) * pos_loss + self.negative_weight * weighted_average_neg_loss
 
-        loss = torch.concat(
-            [
-                -torch.log(torch.sigmoid(torch.sum(pos_u_embs * pos_v_embs, axis=1))),
-                -torch.log(
-                    1 - torch.sigmoid(torch.sum(neg_u_embs * neg_v_embs, axis=1))
-                ),
-            ]
-        )
         loss = torch.mean(loss)
         return loss
 
