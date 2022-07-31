@@ -67,7 +67,7 @@ def calculate_optimal_threshold(targets, scores):
 
     Args:
         targets (tensor(int)): binary labels
-        scores (tensor(float)): probabilities between [0, 1]
+        scores (tensor(float)): probabilities between [0, 1] or logits
 
     Returns:
         float: optimal threshold for F1 score
@@ -92,7 +92,7 @@ def get_prediction_coo(eval_g, edges_u, edges_v, edge_prob, ground_truth):
         eval_g (BipartiteGraph): the target graph that the model was trained to reconstruct
         edges_u (list(string)): all edges in the graph u->v, the u nodes
         edges_v (list(string)): all edges in the graph u->v, the v nodes
-        edge_prob (tensor(float)): the predicted presence probability of each edge
+        edge_prob (tensor(float)): the predicted presence probability/logit of each edge
         ground_truth (tensor(int)): 0 or 1 for whether the edge is present in the eval graph
 
     Returns:
