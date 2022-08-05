@@ -1,3 +1,4 @@
+from src.learning.generate.graph_utils import get_target_interaction_matrix
 from sklearn.metrics import ndcg_score
 import torch
 from src.learning.generate.graph import BipartiteGraph
@@ -72,8 +73,10 @@ def calculate_optimal_threshold(targets, scores):
     Returns:
         float: optimal threshold for F1 score
     """
-    targets = targets.numpy()
-    scores = scores.numpy()
+    if type(targets) is not np.ndarray and type(targets) is not np.matrix:
+        targets = targets.numpy()
+    if type(scores) is not np.ndarray and type(scores) is not np.matrix:
+        scores = scores.numpy()
     fpr, tpr, thresholds = sklearn.metrics.roc_curve(
         targets, scores, drop_intermediate=False
     )
@@ -112,3 +115,9 @@ def get_prediction_coo(eval_g, edges_u, edges_v, edge_prob, ground_truth):
     matrix = coo_matrix((data, (pred_pos_u, pred_neg_u)), shape=(n, m), dtype=bool)
 
     return matrix
+
+def compare_interaction_matrices(data_path, prediction):
+    target = np.array(get_target_interaction_matrix(data_path).todense()).flatten()
+    prediction = np.array(prediction.todense()).flatten()
+
+    return get_metrics(prediction, target)

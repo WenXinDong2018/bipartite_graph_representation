@@ -2,14 +2,14 @@
 import torch
 from torch.nn import functional as F
 
-class TRANSE():
+class TRANS_E():
     def __init__(self):
         self.is_vector = True
     def get_dim(self, n_parameters):
         return n_parameters
 
     def to_string(self):
-        return "TransE"
+        return "TRANS_E"
 
     def get_loss(
         self,

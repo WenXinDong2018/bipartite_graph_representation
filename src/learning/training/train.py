@@ -27,9 +27,15 @@ class TrainingConfig:
         config["train_g"] = config["train_g"].params
         if config["val_g"]:
             config["val_g"] = config["val_g"].params
-        if config["test_g"]:
-            config["test_g"] = config["test_g"].params
-        config["geometry"] = config["geometry"].toString()
+        if config["eval_g"]:
+            config["eval_g"] = config["eval_g"].params
+        config["geometry"] = config["geometry"].to_string()
+        return config
+    def to_string(self):
+        string_dict = self.get_wandb_config()
+        s = "_".join([f"{key}-{value}" for key, value in string_dict.items()
+        if "_g" not in key and "/" not in key])
+        return s
 
 def setup_training(config):
 

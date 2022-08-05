@@ -1,12 +1,11 @@
 '''api from https://nimfa.biolab.si/'''
 
 import nimfa
-import numpy as np
 import os
-from scipy.sparse import load_npz, save_npz
-from src.learning.generate.graph_utils import get_target_graph
-
-# from graph_modeling.training.metrics import calculate_optimal_metrics
+from scipy.sparse import save_npz
+from src.learning.training.evaluate import compare_interaction_matrices
+import json
+from src.learning.generate.graph_utils import get_target_graph, NpEncoder
 
 def matrix_factorization(data_path, dim=4):
 
@@ -19,12 +18,14 @@ def matrix_factorization(data_path, dim=4):
     nmf_fit = nmf()
     predicted_interaction_matrix = nmf.fitted()
 
-    folder_name = f"dim={dim}"
-    output_dir = os.path.join(data_path, "results", "matrix_factorization", folder_name)
+    folder_name = f"nmf_dim={dim}"
+    output_dir = os.path.join(data_path, "results",  f"n_params={dim}","matrix_factorization", folder_name)
     os.makedirs(output_dir, exist_ok=True)
-    save_npz(os.path.join(output_dir, "prediction"), predicted_interaction_matrix)
+    save_npz(os.path.join(output_dir, "interaction_matrix"), predicted_interaction_matrix)
 
-    # metrics = calculate_optimal_metrics(np.array(sparse_matrix.todense()).flatten().squeeze(),
-    #                                np.array(predicted_matrix.todense()).flatten().squeeze())
+    metrics = compare_interaction_matrices(data_path, predicted_interaction_matrix)
 
-    return predicted_interaction_matrix
+    metrics_path = os.path.join(output_dir, "metrics.json")
+    json.dump(metrics, open(metrics_path, "w"), cls=NpEncoder)
+
+    return metrics, predicted_interaction_matrix

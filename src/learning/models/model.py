@@ -12,7 +12,7 @@ BIPARTITE_DEFAULT_TRAINING_CONFIG = {
     "lr_step_size": 1,
     "lr_gamma": 0.9,      #multiply lr by gamma every step_size epochs
     "weight_decay": 0,  #L2 regularization
-    "max_did_not_improve": 20,
+    "max_did_not_improve": 5,
     "print_every": 1,
     "train_g":generateSyntheticBipartiteGraph(GraphParams())[0],
     "val_g": None,

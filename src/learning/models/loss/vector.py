@@ -26,7 +26,11 @@ class VECTOR(Geometry):
         neg_v_embs,
         neg_v_offset_embs,
     ):
+        '''loss: BCE negative sampling loss
+            (1-alpha) * -log(sigmoid(u.Tv)) + alpha * weighted_sum( -log(1-sigmoid(u.Tv')) )
+        '''
 
+        neg_scores = torch.sum(neg_u_embs * neg_v_embs, axis=1)
         log_prob_pos = torch.log(
             torch.sigmoid(torch.sum(pos_u_embs * pos_v_embs, axis=1))
         )
@@ -38,6 +42,7 @@ class VECTOR(Geometry):
         neg_loss = -torch.log(
             1 - torch.sigmoid(torch.sum(neg_u_embs * neg_v_embs, axis=1))
         )
+
         logit_prob_neg = log_prob_neg + neg_loss
         weights = F.softmax(logit_prob_neg, dim=-1)
         weighted_average_neg_loss = (weights * neg_loss).sum(dim=-1)

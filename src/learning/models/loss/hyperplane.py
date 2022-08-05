@@ -27,7 +27,12 @@ class HYPERPLANE(Geometry):
         neg_v_embs,
         neg_v_offset_embs,
     ):
-        '''max(0, 1-y(wx+b))'''
+        '''
+            loss: negative sampling loss
+
+            (1-alpha) * max(0, 1-(uTv+b)) + alpha * weightedsum( max(0, 1+(uTv'+b)) )
+
+        '''
         pos_dist = torch.sum(pos_u_embs * pos_v_embs, axis=1) + pos_u_offset_embs
         neg_dist = torch.sum(neg_u_embs * neg_v_embs, axis=1) + neg_u_offset_embs
         pos_loss = torch.max(torch.tensor(0), 1-pos_dist)
