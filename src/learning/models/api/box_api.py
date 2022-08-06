@@ -18,9 +18,12 @@ def box(data_path, dim = 4, box_type = "tbox", config={}):
 
     #if already exist simply return existing metrics
     if os.path.exists(output_dir):
-        prediction_coo = load_npz(os.path.join(output_dir, "interaction_matrix.npz"))
-        metrics = json.load(open(metrics_path, "r"))
-        return metrics, prediction_coo
+        try:
+            prediction_coo = load_npz(os.path.join(output_dir, "interaction_matrix.npz"))
+            metrics = json.load(open(metrics_path, "r"))
+            return metrics, prediction_coo
+        except Exception as e:
+            pass
 
     # train
     command = f"graph_modeling train --data_path={data_path} --output_dir={output_dir} --model_type={box_type} --save_prediction --dim={dim}"
@@ -28,7 +31,7 @@ def box(data_path, dim = 4, box_type = "tbox", config={}):
         command += f" --{key}={value}"
     subprocess.call(command, shell=True)
 
-    # save
+    # save files
     prediction_file = ""
     for folder in os.listdir(output_dir):
         if os.path.isdir(os.path.join(output_dir, folder)):

@@ -18,10 +18,12 @@ def ordered_embedding(data_path, dim = 4):
     metrics_path = os.path.join(output_dir, "metrics.json")
 
     #if already exist simply return existing metrics
-    if os.path.exists(output_dir):
+    try:
         prediction_coo = load_npz(os.path.join(output_dir, "interaction_matrix.npz"))
         metrics = json.load(open(metrics_path, "r"))
         return metrics, prediction_coo
+    except Exception as e:
+        pass
 
     #train
     model, metrics, prediction_coo = train(config)
