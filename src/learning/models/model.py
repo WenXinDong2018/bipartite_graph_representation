@@ -20,7 +20,7 @@ BIPARTITE_DEFAULT_TRAINING_CONFIG = {
     "neg_sampler": "corrupt_tail",
     "geometry": VECTOR(),
     "dim": 4,
-    "k": 128,
+    "k": 32,
     "save_dir": None,
     "seed":0,
     "wandb_id":None,
