@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 from src.learning.models.model import BipartiteModel
 import os
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class TrainingConfig:
     def __init__(self, default_config):
@@ -48,11 +49,14 @@ def setup_training(config):
         val_dataset = GraphDataset(val_g, config.k, get_neg_sampler(config.neg_sampler))
         val_loader = DataLoader(val_dataset, shuffle=True, batch_size=config.batch_size)
     model = BipartiteModel(config)
+    model.to(device)
 
     return train_loader, val_loader, model
 
 
 def train(config):
+
+    logger.info(f"training on {device}")
 
     torch.manual_seed(config.seed)
     random.seed(config.seed)

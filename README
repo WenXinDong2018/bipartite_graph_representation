@@ -1,5 +1,6 @@
 - '''conda create -n graph python=3.9.12'''
-
+- '''conda activate graph'''
+- '''pip install -r requirements.txt'''
 - '''python -m ipykernel install --user --name graph'''
 - '''cd lib/geometric-graph-embedding'''
 - '''python setup.py build'''
