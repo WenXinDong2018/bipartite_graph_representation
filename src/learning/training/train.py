@@ -1,15 +1,10 @@
-import string
 import torch
 import datetime
-import wandb
-import matplotlib.pyplot as plt
 import random
 from loguru import logger
 from src.learning.training.dataset import get_neg_sampler, GraphDataset
 from src.learning.training.trainer import trainer
 from src.learning.training.evaluate import evaluate
-from collections import defaultdict
-import numpy as np
 from torch.utils.data import DataLoader
 from src.learning.models.model import BipartiteModel
 import os
@@ -40,6 +35,7 @@ class TrainingConfig:
 
 def setup_training(config):
 
+    logger.info("setting up training")
     train_g = config.train_g
     val_g = config.val_g
     train_dataset = GraphDataset(train_g, config.k, get_neg_sampler(config.neg_sampler))
@@ -50,7 +46,7 @@ def setup_training(config):
         val_loader = DataLoader(val_dataset, shuffle=True, batch_size=config.batch_size)
     model = BipartiteModel(config)
     model.to(device)
-
+    logger.info("finished setting up training")
     return train_loader, val_loader, model
 
 
