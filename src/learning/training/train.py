@@ -53,7 +53,7 @@ def setup_training(config):
 def train(config):
 
     logger.info(f"training on {device}")
-
+    logger.info(f"batch size = {config.batch_size}")
     torch.manual_seed(config.seed)
     random.seed(config.seed)
     config.exp_id = str(datetime.datetime.now()).replace(":", "_")
