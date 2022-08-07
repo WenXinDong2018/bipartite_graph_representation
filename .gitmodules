@@ -1,0 +1,6 @@
+[submodule "lib/geometric-graph-embedding"]
+	path = lib/geometric-graph-embedding
+	url = https://github.com/iesl/geometric-graph-embedding.git
+[submodule "lib/knowledge_graph_attention_network"]
+	path = lib/knowledge_graph_attention_network
+	url = https://github.com/xiangwang1223/knowledge_graph_attention_network.git
