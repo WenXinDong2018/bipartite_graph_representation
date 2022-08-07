@@ -2,8 +2,30 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator
 import numpy as np
-from src.learning.generate.generate_synthetic_graph_params import BIPARTITE_DEFAULT_PARAMS
+from src.learning.generate.generate_synthetic_graph_params import BIPARTITE_DEFAULT_PARAMS, BIPARTITE_DEFAULT_RANGE
 from src.learning.generate.generate_synthetic_graph import GraphParams, generateSyntheticBipartiteGraph
+
+def plot_extrema_matrices_one_param(test_param_1):
+    def plot(x):
+        params = GraphParams()
+        setattr(params, test_param_1, x)
+        _, _, interaction_matrix, _ = generateSyntheticBipartiteGraph(params, save_graph=False)
+        plt.title(f"{test_param_1}: {x} ")
+        plt.imshow(interaction_matrix.todense(), "Greys")
+        plt.show()
+
+    x_min = int(BIPARTITE_DEFAULT_RANGE[test_param_1][0])
+    x_q1 = int(BIPARTITE_DEFAULT_RANGE[test_param_1][len(BIPARTITE_DEFAULT_RANGE[test_param_1])//4])
+    x_mid = int(BIPARTITE_DEFAULT_RANGE[test_param_1][len(BIPARTITE_DEFAULT_RANGE[test_param_1])//2])
+    x_q3 = int(BIPARTITE_DEFAULT_RANGE[test_param_1][3*len(BIPARTITE_DEFAULT_RANGE[test_param_1])//4])
+
+    x_max = int(BIPARTITE_DEFAULT_RANGE[test_param_1][-1])
+    plot(x_min)
+    plot(x_q1)
+    plot(x_mid)
+    plot(x_q3)
+    plot(x_max)
+
 
 def plot_extrema_matrices(result_df,test_param_1, test_param_2):
     def plot(x, y):
