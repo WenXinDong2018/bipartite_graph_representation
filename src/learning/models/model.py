@@ -24,7 +24,7 @@ BIPARTITE_DEFAULT_TRAINING_CONFIG = {
     "save_dir": None,
     "seed":0,
     "wandb_id":None,
-    "batch_size": 128,
+    "batch_size": 32,
     "visualize": True
 }
 
